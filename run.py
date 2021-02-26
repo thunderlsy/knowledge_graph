@@ -53,14 +53,18 @@ def search(node_name):
     relationship_end = []
 
     for i in sub_graph:
-        print(type(i.get('relationship')).__name__)
-        print(i.get('end_node').get('name'))
-        start_id_list = [i.get('end_node').get('name'), i.get('end_node').get('id')]
-        relationship_end.append({type(i.get('relationship')).__name__: start_id_list})
+        # print(type(i.get('relationship')).__name__)
+        # print(i.get('end_node').get('name'))
+        # start_id_list = [i.get('end_node').get('name'), i.get('end_node').get('id')]
+        # relationship_end.append({type(i.get('relationship')).__name__: start_id_list})
+
+        # relationship_end.append([i['second_relationship']['start_node']['name'], i['second_relationship']['start_node']['id']])
+
+        relationship_end.append({"source_name": i['second_node']['name'], "source_id": i['second_node']['id'], "relationship": type(i['second_relationship']).__name__, "target_name": i['third_node']['name'], "target_id": i['third_node']['id']})
 
     json_dict = {
-        "start_node": [node_name, sub_graph[0].get('start_node').get('id')],
-        "relationship_end": relationship_end,
+        "start_node": {"start_name": node_name, "start_id": sub_graph[0]['start_node']['id']},
+        "relationship_information": relationship_end,
         # "sub_graph": sub_graph
     }
 
