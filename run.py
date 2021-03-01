@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from py2neo import Graph, Node, Relationship, walk
 
 graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
@@ -11,6 +12,7 @@ def create_flask_app(config):
     :return: Flask应用
     """
     the_app = Flask(__name__)
+    CORS(the_app)
     the_app.config.from_object(config)
 
     # 从环境变量指向的配置文件中读取的配置信息会覆盖掉从配置对象中加载的同名参数
@@ -46,26 +48,34 @@ def index():
 def search(node_name):
     # sub_graph = graph.run(gql).to_subgraph()
     # gql = "match (start_node)-[relationship]-(end_node) where start_node.name = '{}' return start_node,relationship,end_node".format(node_name)
-    gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name = '{}' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(node_name)
+    gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name = '{}' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
+        node_name)
 
     sub_graph = graph.run(gql).data()
+
+    if not sub_graph:
+        json_dict = {
+            "error_code": 1,
+            "data": "数据库查无此数据",
+        }
+        return jsonify(json_dict)
 
     relationship_end = []
 
     for i in sub_graph:
-        # print(type(i.get('relationship')).__name__)
-        # print(i.get('end_node').get('name'))
-        # start_id_list = [i.get('end_node').get('name'), i.get('end_node').get('id')]
-        # relationship_end.append({type(i.get('relationship')).__name__: start_id_list})
 
-        # relationship_end.append([i['second_relationship']['start_node']['name'], i['second_relationship']['start_node']['id']])
+        if i['second_node']['id'] != i['third_node']['id']:
+            relationship_end.append({"source_name": i['second_node']['name'], "source_id": i['second_node']['id'],
+                                     "relationship": type(i['second_relationship']).__name__,
+                                     "target_name": i['third_node']['name'], "target_id": i['third_node']['id']})
 
-        relationship_end.append({"source_name": i['second_node']['name'], "source_id": i['second_node']['id'], "relationship": type(i['second_relationship']).__name__, "target_name": i['third_node']['name'], "target_id": i['third_node']['id']})
 
     json_dict = {
+        "error_code": 0,
         "start_node": {"start_name": node_name, "start_id": sub_graph[0]['start_node']['id']},
         "relationship_information": relationship_end,
-        # "sub_graph": sub_graph
     }
 
-    return jsonify(json_dict), 200
+    return jsonify(json_dict)
+
+# app.run('0.0.0.0', 5000)
