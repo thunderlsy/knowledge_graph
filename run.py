@@ -4,7 +4,7 @@ from py2neo import Graph, Node, Relationship, walk
 from cart import cart_bp
 from search import search_bp
 
-# graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
+graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
 
 
 def create_flask_app(config):

@@ -4,9 +4,10 @@
 from flask import jsonify
 from search import search_bp
 from py2neo import Graph
+from run import graph
 
 
-graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
+# graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
 
 
 @search_bp.route('/<node_name>', methods=["GET"])
