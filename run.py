@@ -4,8 +4,6 @@ from cart import cart_bp
 from search import search_bp
 from py2neo import Graph
 
-# graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
-
 
 def create_flask_app(config):
     """
@@ -39,9 +37,8 @@ class ProductionConfig(DefaultConfig):
 # app = create_flask_app(ProductionConfig)
 app = create_flask_app(DevelopmentConfig)
 
+# 数据库连接信息保存在current_app中
 app.graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
-
-
 app.register_blueprint(search_bp)
 app.register_blueprint(cart_bp)
 
