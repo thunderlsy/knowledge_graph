@@ -2,18 +2,15 @@
 # -*- coding: utf-8 -*-
 
 from flask import jsonify
-from search import search_bp
-from py2neo import Graph
-from run import graph
-
-
-# graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
+from search import search_bp, graph
 
 
 @search_bp.route('/<node_name>', methods=["GET"])
-def cart_info(node_name):
-    # sub_graph = graph.run(gql).to_subgraph()
+def search(node_name):
+    # 二级查询
     # gql = "match (start_node)-[relationship]-(end_node) where start_node.name = '{}' return start_node,relationship,end_node".format(node_name)
+
+    # 三级查询
     gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name = '{}' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
         node_name)
 
@@ -42,4 +39,3 @@ def cart_info(node_name):
     }
 
     return jsonify(json_dict)
-
