@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from flask import jsonify
-from search import search_bp, graph
+from flask import jsonify, current_app
+from search import search_bp
 
 
 @search_bp.route('/<node_name>', methods=["GET"])
@@ -14,7 +14,7 @@ def search(node_name):
     gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name = '{}' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
         node_name)
 
-    sub_graph = graph.run(gql).data()
+    sub_graph = current_app.graph.run(gql).data()
 
     if not sub_graph:
         json_dict = {

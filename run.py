@@ -38,6 +38,10 @@ class ProductionConfig(DefaultConfig):
 
 # app = create_flask_app(ProductionConfig)
 app = create_flask_app(DevelopmentConfig)
+
+app.graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
+
+
 app.register_blueprint(search_bp)
 app.register_blueprint(cart_bp)
 
