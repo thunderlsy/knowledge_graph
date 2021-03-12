@@ -33,6 +33,7 @@ def logging2(func):
 @cart_bp.route('/info', methods=["GET"])
 def cart_info():
     return "cart_info"
+    # return jsonify("cart_info")
 
 
 # 2.2 定义类视图
