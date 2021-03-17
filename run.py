@@ -23,6 +23,7 @@ def create_flask_app(config):
 class DefaultConfig(object):
     """默认配置"""
     SECRET_KEY = 'chris!@#$%^&*()'
+    # 防止前端中文显示为ASCII
     JSON_AS_ASCII = False
 
 

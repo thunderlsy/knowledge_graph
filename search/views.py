@@ -4,11 +4,38 @@
 from flask import jsonify, current_app
 from search import search_bp
 from flask_restful import Resource, Api
+import time
 
 search_api = Api(search_bp)
 
 
+def timing_one(func):
+    def inner(*args, **kwargs):
+        begin = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print("函数执行花费%f,(1号计时器)" % (end - begin))
+        return result
+
+    return inner
+
+
+def timing_two(func):
+    def inner(*args, **kwargs):
+        begin = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print("函数执行花费%f,(2号计时器)" % (end - begin))
+        return result
+
+    return inner
+
+
 class ThreeLevelSearch(Resource):
+
+    method_decorators = {
+        "get": [timing_one]
+    }
 
     def get(self, node_name):
 
@@ -46,6 +73,10 @@ class ThreeLevelSearch(Resource):
 
 class TwoLevelSearch(Resource):
 
+    method_decorators = {
+        "get": [timing_two]
+    }
+
     def get(self, node_name):
 
         # 二级查询
@@ -64,7 +95,6 @@ class TwoLevelSearch(Resource):
         relationship_end = []
 
         for i in sub_graph:
-
             relationship_end.append({"relationship": type(i['r']).__name__,
                                      "target_name": i['target_node']['name'],
                                      "target_id": i['target_node']['id']})
