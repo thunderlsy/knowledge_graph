@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>知识图谱</title>
+    <link rel="stylesheet" type="text/css" href="./static/css/main.css">
+</head>
+<body>
+<script src="./static/js/d3.v3.min.js"></script>
+<script src="./static/js/jquery-3.5.1.min.js"></script>
+
+<header>
+    <div class="top_nav">
+        <a class="home" href="/">知识图谱</a></li>
+        <ul>
+            <li><a href="/distinguish">实体识别</a></li>
+            <li><a href="#about">关于</a></li>
+            <li><a href="#contact">联系我们</a></li>
+        </ul>
+        <div class="search_nav hidden">
+            <input type="text" placeholder="搜索..." class="input_val">
+            <button class="click_but">搜 索</button>
+        </div>
+
+    </div>
+</header>
+
+<div class="main">
+    <div class="container">
+        <div class="left">
+            <div>
+                <label>输入</label>
+                <button class="clear">清 空</button>
+                <button class="primary">分 析</button>
+            </div>
+            <textarea maxlength="1500" placeholder="请输入字符（最大1500字符）"></textarea>
+        </div>
+        <div class="right">
+            <div>
+                <label>实体识别结果</label>
+                <button id="outputButton" class="btn btn-primary pull-right">导 出</button>
+            </div>
+            <textarea disabled></textarea>
+        </div>
+    </div>
+    <footer>
+        <p>Design by: iDSBG PSD NPI RD SW AI&BigData</p>
+        <p>Ext. 560-80239</p>
+        <p>Email: Amy X.T. Jia/CEN/FOXCONN</p>
+    </footer>
+</div>
+
+
+</body>
+</html>

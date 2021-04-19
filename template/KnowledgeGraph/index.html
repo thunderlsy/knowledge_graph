@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>知识图谱</title>
+    <link rel="stylesheet" type="text/css" href="./static/css/main.css">
+</head>
+<body>
+<script src="./static/js/d3.v3.min.js"></script>
+<script src="./static/js/jquery-3.5.1.min.js"></script>
+
+<header>
+    <div class="top_nav">
+        <a class="home" href="/">知识图谱</a></li>
+        <ul>
+            <li><a href="/distinguish">实体识别</a></li>
+            <li><a href="#about">关于</a></li>
+            <li><a href="#contact">联系我们</a></li>
+        </ul>
+        <div class="search_nav hidden">
+            <input type="text" placeholder="搜索..." class="input_val">
+            <button class="click_but">搜 索</button>
+        </div>
+
+    </div>
+</header>
+<div class="main">
+    <div class="search">
+        <input type="text" placeholder="搜索..." class="input_val">
+        <button class="click_but">搜 索</button>
+    </div>
+
+    <div class="main_svg hidden"></div>
+    <footer>
+        <p>Design by: iDSBG PSD NPI RD SW AI&BigData</p>
+        <p>Ext. 560-80239</p>
+        <p>Email: Amy X.T. Jia/CEN/FOXCONN</p>
+    </footer>
+</div>
+
+
+<script>
+    $(".click_but").click(click_func);  //点击事件
+    $("body").keydown(function(e) {
+        if (e.keyCode == "13") {  //回车触发事件
+            click_func();
+        }
+    });
+
+    function click_func() {
+        let input_name = $('.search_nav input').val();
+        if ($(".search_nav").is(".hidden")) {
+            input_name = $('.search input').val();
+        }
+        // 检测输入框是否为空
+        if (input_name == '') {
+            alert("请输入内容！");
+            return
+        }
+        console.log(input_name);
+        $.ajax({
+            type: "get",
+            url: "http://10.141.6.133:5000/search/" + input_name,
+            success: function (result) {
+                console.log(result);
+                if (result.error_code == 0) {
+                    $(".main_svg").empty();
+                    forcce_map(result);
+                    $(".main_svg").removeClass("hidden");
+                    $(".search_nav").removeClass("hidden");
+                    $(".search").addClass("hidden");
+                }
+                else {
+                    alert(result.data)
+                }
+            },
+            //请求失败，包含具体的错误信息
+            error: function (e) {
+                console.log(e.status);
+            }
+        });
+    }
+
+    // let datas = {
+    //     "relationship_information": [
+    //         {
+    //             "relationship": "建议游玩时长",
+    //             "source_id": "40",
+    //             "source_name": "灵峰",
+    //             "target_id": "53",
+    //             "target_name": "半天"
+    //         },
+    //         {
+    //             "relationship": "所属地区",
+    //             "source_id": "40",
+    //             "source_name": "灵峰",
+    //             "target_id": "44",
+    //             "target_name": "雁荡山"
+    //         },
+    //         {
+    //             "relationship": "总面积",
+    //             "source_id": "44",
+    //             "source_name": "雁荡山",
+    //             "target_id": "80",
+    //             "target_name": "450平方公里"
+    //         }
+    //     ],
+    //     "start_node": {
+    //         "start_id": "40",
+    //         "start_name": "灵峰"
+    //     }
+    // };
+
+    function forcce_map(datas) {
+        let nodes = {};
+        let links = datas.relationship_information;
+        links.forEach(function (link) {
+            link.source = nodes[link.source_id] || (nodes[link.source_id] = {
+                name: link.source_name,
+                id: link.source_id
+            });
+            link.target = nodes[link.target_id] || (nodes[link.target_id] = {
+                name: link.target_name,
+                id: link.target_id
+            });
+
+        });
+
+        console.log(nodes);
+        console.log(links);
+
+        let width = 1068,
+            height = 800;
+
+        let force = d3.layout.force()  //layout将json格式转化为力学图可用的格式
+            .nodes(d3.values(nodes))  //设定节点数组
+            .links(links)  //设定连线数组
+            .size([width, height]) //设定作用域的大小
+            .linkDistance(180)  //设定关系连线长度
+            .charge(-1500)  //顶点的电荷数。该参数决定是排斥还是吸引，数值越小越互相排斥
+            .on("tick", tick)  //指时间间隔，隔一段时间刷新一次画面
+            .start();  //开始转换
+
+        let svg = d3.select(".main_svg")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        //	定义一个颜色生成器，由d3提供
+        let color = d3.scale.category20(); //20表示可以生成20种不同的颜色
+
+        //箭头
+        let marker = svg.append("marker")
+            .attr("id", "resolved")
+            .attr("markerUnits", "userSpaceOnUse")
+            .attr("viewBox", "0 -5 10 10")  //坐标系的区域
+            .attr("refX", 32)  //箭头坐标
+            .attr("refY", -1)
+            .attr("markerWidth", 12)  //标识的大小
+            .attr("markerHeight", 12)
+            .attr("orient", "auto")  //绘制方向，可设定为：auto（自动确认方向）和 角度值
+            .attr("stroke-width", 2)  //箭头宽度
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5")  //箭头的路径
+            .attr('fill', 'white');  //箭头颜色
+
+        //设置连接线
+        let edges_line = svg.selectAll(".edgepath")
+            .data(force.links())
+            .enter()
+            .append("path")
+            .attr({
+                'd': function (d) {
+                    return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y
+                },
+                'class': 'edgepath',
+                'id': function (d, i) {
+                    return 'edgepath' + i;
+                }
+            })
+            .style("stroke", "white")  //边框颜色
+            .style("pointer-events", "none")
+            .style("stroke-width", 0.5)  //线条粗细
+            .attr("marker-end", "url(#resolved)");//根据箭头标记的id号标记箭头
+
+        let edges_text = svg.append("g").selectAll("edgelabel")
+            .data(force.links())
+            .enter()
+            .append("text")
+            .style("pointer-events", "none")
+            .style('fill', 'white')
+            .attr({'dx': 40, 'dy': 15});
+
+        //设置线条上的文字
+        edges_text.append('textPath')
+            .attr('xlink:href', function (d, i) {
+                return '#edgepath' + i
+            })
+            .style("pointer-events", "none")
+            .text(function (d) {
+                return d.relationship
+            });
+
+        //圆圈
+        let circle = svg.append("g").selectAll("circle")
+            .data(force.nodes())  //表示使用force.nodes数据
+            .enter()
+            .append("circle")
+            .style('fill', function (d, i) {
+                return color(i); //根据自身的索引号，自动随机获取一种背景颜色
+            })
+            .attr("r", 28)//设置圆圈半径
+            .on("click", function (node) {
+                console.log(node.name);
+                //单击时让连接线加粗
+                edges_line.style("stroke-width", function (line) {
+                    if (line.source.name == node.name || line.target.name == node.name) {
+                        return 2;
+                    } else {
+                        return 0.5;
+                    }
+                });
+                $.ajax({
+                    type: "get",
+                    url: "http://10.141.6.133:5000/search/" + node.name,
+                    success: function (result) {
+                        console.log(result);
+                        if (result.error_code == 0) {
+                            $(".main_svg").empty();
+                            forcce_map(result);
+                        }
+                        else {
+                            alert(result.data)
+                        }
+                    },
+                    //请求失败，包含具体的错误信息
+                    error: function (e) {
+                        console.log(e.status);
+                    }
+                });
+
+            })
+            .call(force.drag);  //将当前选中的元素传到drag函数中，使顶点可以被拖动
+
+        //圆圈的提示文字
+        circle.append("svg:title")
+            .text(function (node) {
+                return "单击可查看详情";
+            });
+
+        let text = svg.append("g").selectAll("text")
+            .data(force.nodes())
+            .enter()
+            .append("text")
+            // .attr("x", 150)  //设置文字坐标
+            // .attr("y", ".50em")
+            .attr("y", ".35em")
+            .attr("text-anchor", "middle")  //文字居中显示在节点上
+            .style('fill', "white")
+            .style("pointer-events", "none")
+            // .attr('x',function(d){
+            //     // console.log(d.name+"---"+ d.name.length);
+            //     var re_en = /[a-zA-Z]+/g;
+            //     //如果是全英文，不换行
+            //     if(d.name.match(re_en)){
+            //         d3.select(this).append('tspan')
+            //             .attr('x',0)
+            //             .attr('y',2)
+            //             .text(function(){return d.name;});
+            //     }
+            //     //如果小于四个字符，不换行
+            //     else if(d.name.length<=4){
+            //         d3.select(this).append('tspan')
+            //             .attr('x',0)
+            //             .attr('y',2)
+            //             .text(function(){return d.name;});
+            //     }else{
+            //         var top=d.name.substring(0,4);
+            //         var bot=d.name.substring(4,d.name.length);
+            //
+            //         d3.select(this).text(function(){return '';});
+            //
+            //         d3.select(this).append('tspan')
+            //             .attr('x',0)
+            //             .attr('y',-7)
+            //             .text(function(){return top;});
+            //
+            //         d3.select(this).append('tspan')
+            //             .attr('x',0)
+            //             .attr('y',10)
+            //             .text(function(){return bot;});
+            //     }
+            //   });
+            //直接显示文字
+            .text(function (d) {
+                return d.name;
+            });
+
+        function tick() {
+            //圆圈
+            circle.attr("transform", function (d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+            //顶点文字
+            text.attr("transform", function (d) {
+                return "translate(" + (d.x) + "," + d.y + ")";
+            });
+            //path.attr("d", linkArc);//连接线
+            //text2.attr("d", linkArc);//连接线文字
+
+            edges_line.attr('d', function (d) {
+                return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
+            });
+
+            edges_text.attr('transform', function (d, i) {
+                if (d.target.x < d.source.x) {
+                    bbox = this.getBBox();
+                    rx = bbox.x + bbox.width / 2;
+                    ry = bbox.y + bbox.height / 2;
+                    return 'rotate(180 ' + rx + ' ' + ry + ')';
+                } else {
+                    return 'rotate(0)';
+                }
+            });
+        }
+    }
+
+
+</script>
+
+</body>
+</html>

@@ -32,7 +32,6 @@ def timing_two(func):
 
 
 class ThreeLevelSearch(Resource):
-
     method_decorators = {
         "get": [timing_one]
     }
@@ -52,19 +51,26 @@ class ThreeLevelSearch(Resource):
             }
             return json_dict
 
-        relationship_end = []
-
+        Sou_Tar_List = []
+        temp_second_id_list = []
         for i in sub_graph:
 
             if i['second_node']['id'] != i['third_node']['id']:
-                relationship_end.append({"source_name": i['second_node']['name'], "source_id": i['second_node']['id'],
-                                         "relationship": type(i['second_relationship']).__name__,
-                                         "target_name": i['third_node']['name'], "target_id": i['third_node']['id']})
+                # 添加二级与三级节点的关系
+                Sou_Tar_List.append({"source_name": i['second_node']['name'], "source_id": i['second_node']['id'],
+                                     "relationship": type(i['second_relationship']).__name__,
+                                     "target_name": i['third_node']['name'], "target_id": i['third_node']['id']})
 
+                # 添加一级与二级节点的关系
+                if i['second_node']['id'] not in temp_second_id_list:
+                    Sou_Tar_List.append({"source_name": i['start_node']['name'], "source_id": i['start_node']['id'],
+                                         "relationship": type(i['first_relationship']).__name__,
+                                         "target_name": i['second_node']['name'], "target_id": i['second_node']['id']})
+                    temp_second_id_list.append(i['second_node']['id'])
         json_dict = {
             "error_code": 0,
             "start_node": {"start_name": node_name, "start_id": sub_graph[0]['start_node']['id']},
-            "relationship_information": relationship_end,
+            "relationship_information": Sou_Tar_List,
         }
 
         return jsonify(json_dict)
@@ -72,7 +78,6 @@ class ThreeLevelSearch(Resource):
 
 
 class TwoLevelSearch(Resource):
-
     method_decorators = {
         "get": [timing_two]
     }
@@ -92,16 +97,16 @@ class TwoLevelSearch(Resource):
             }
             return json_dict
 
-        relationship_end = []
+        Sou_Tar_List = []
 
         for i in sub_graph:
-            relationship_end.append({"relationship": type(i['r']).__name__,
-                                     "target_name": i['target_node']['name'],
-                                     "target_id": i['target_node']['id']})
+            Sou_Tar_List.append({"relationship": type(i['r']).__name__,
+                                 "target_name": i['target_node']['name'],
+                                 "target_id": i['target_node']['id']})
         json_dict = {
             "error_code": 0,
             "start_node": {"start_name": node_name, "start_id": sub_graph[0]['source_node']['id']},
-            "relationship_information": relationship_end,
+            "relationship_information": Sou_Tar_List,
         }
 
         return jsonify(json_dict)

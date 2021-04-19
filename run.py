@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 from cart import cart_bp
 from search import search_bp
@@ -11,7 +11,7 @@ def create_flask_app(config):
     :param config: 配置对象
     :return: Flask应用
     """
-    the_app = Flask(__name__)
+    the_app = Flask(__name__, template_folder='./template', static_folder='./template/KnowledgeGraph/static')
     CORS(the_app)
     the_app.config.from_object(config)
 
@@ -46,11 +46,17 @@ app.register_blueprint(cart_bp)
 
 @app.route("/")
 def index():
-    print(app.config['SECRET_KEY'])
-    url_dict = {rule.rule: rule.endpoint for rule in app.url_map.iter_rules()}
-    print(url_dict)
+    # print(app.config['SECRET_KEY'])
+    # url_dict = {rule.rule: rule.endpoint for rule in app.url_map.iter_rules()}
+    # print(url_dict)
+    #
+    # return jsonify(url_dict)
+    return render_template('KnowledgeGraph/index.html')
 
-    return jsonify(url_dict)
+
+@app.route("/distinguish")
+def distinguish():
+    return render_template('KnowledgeGraph/distinguish.html')
 
 
 app.run('0.0.0.0', 5000)
