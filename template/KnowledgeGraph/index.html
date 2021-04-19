@@ -81,36 +81,6 @@
         });
     }
 
-    // let datas = {
-    //     "relationship_information": [
-    //         {
-    //             "relationship": "建议游玩时长",
-    //             "source_id": "40",
-    //             "source_name": "灵峰",
-    //             "target_id": "53",
-    //             "target_name": "半天"
-    //         },
-    //         {
-    //             "relationship": "所属地区",
-    //             "source_id": "40",
-    //             "source_name": "灵峰",
-    //             "target_id": "44",
-    //             "target_name": "雁荡山"
-    //         },
-    //         {
-    //             "relationship": "总面积",
-    //             "source_id": "44",
-    //             "source_name": "雁荡山",
-    //             "target_id": "80",
-    //             "target_name": "450平方公里"
-    //         }
-    //     ],
-    //     "start_node": {
-    //         "start_id": "40",
-    //         "start_name": "灵峰"
-    //     }
-    // };
-
     function forcce_map(datas) {
         let nodes = {};
         let links = datas.relationship_information;
@@ -201,7 +171,9 @@
                 return d.relationship
             });
 
+
         //圆圈
+        var x, y;
         let circle = svg.append("g").selectAll("circle")
             .data(force.nodes())  //表示使用force.nodes数据
             .enter()
@@ -210,35 +182,45 @@
                 return color(i); //根据自身的索引号，自动随机获取一种背景颜色
             })
             .attr("r", 28)//设置圆圈半径
-            .on("click", function (node) {
-                console.log(node.name);
-                //单击时让连接线加粗
-                edges_line.style("stroke-width", function (line) {
-                    if (line.source.name == node.name || line.target.name == node.name) {
-                        return 2;
-                    } else {
-                        return 0.5;
-                    }
-                });
-                $.ajax({
-                    type: "get",
-                    url: "http://10.141.6.133:5000/search/" + node.name,
-                    success: function (result) {
-                        console.log(result);
-                        if (result.error_code == 0) {
-                            $(".main_svg").empty();
-                            forcce_map(result);
+            .on("mousedown", function(node){ //获取鼠标按下的位置
+                x = event.pageX;
+                y = event.pageY;
+            })
+            .on("mouseup", function(node){ //鼠标释放        
+                var newX = event.pageX;
+                var newY = event.pageY;
+                if(x == newX && y == newY){
+                    //位置相同的操作
+                    $.ajax({
+                        type: "get",
+                        url: "http://10.141.6.133:5000/search/" + node.name,
+                        success: function (result) {
+                            console.log(result);
+                            if (result.error_code == 0) {
+                                $(".main_svg").empty();
+                                forcce_map(result);
+                            }
+                            else {
+                                alert(result.data)
+                            }
+                        },
+                        //请求失败，包含具体的错误信息
+                        error: function (e) {
+                            console.log(e.status);
                         }
-                        else {
-                            alert(result.data)
+                    });
+                }
+                else{
+                    //位置不同的操作
+                    //单击时让连接线加粗
+                    edges_line.style("stroke-width", function (line) {
+                        if (line.source.name == node.name || line.target.name == node.name) {
+                            return 2;
+                        } else {
+                            return 0.5;
                         }
-                    },
-                    //请求失败，包含具体的错误信息
-                    error: function (e) {
-                        console.log(e.status);
-                    }
-                });
-
+                    });
+                }
             })
             .call(force.drag);  //将当前选中的元素传到drag函数中，使顶点可以被拖动
 

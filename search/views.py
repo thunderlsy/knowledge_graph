@@ -39,7 +39,7 @@ class ThreeLevelSearch(Resource):
     def get(self, node_name):
 
         # 三级查询
-        gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name = '{}' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
+        gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name =~ '.*{}.*' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
             node_name)
 
         sub_graph = current_app.graph.run(gql).data()
