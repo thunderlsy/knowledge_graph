@@ -193,7 +193,7 @@
                     //位置相同的操作
                     $.ajax({
                         type: "get",
-                        url: "http://10.141.6.133:5000/input_search/" + node.name,
+                        url: "http://10.141.6.133:5000/click_search/" + node.name,
                         success: function (result) {
                             console.log(result);
                             if (result.error_code == 0) {
