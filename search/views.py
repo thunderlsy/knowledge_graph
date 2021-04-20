@@ -100,7 +100,9 @@ def two_level_search(node_name):
     Sou_Tar_List = []
 
     for i in sub_graph:
-        Sou_Tar_List.append({"relationship": type(i['r']).__name__,
+        Sou_Tar_List.append({"source_name": i['source_node']['name'],
+                             "source_id": i['source_node']['id'],
+                             "relationship": type(i['r']).__name__,
                              "target_name": i['target_node']['name'],
                              "target_id": i['target_node']['id']})
     json_dict = {
@@ -109,6 +111,7 @@ def two_level_search(node_name):
         "relationship_information": Sou_Tar_List,
     }
     return jsonify(json_dict)
+
 
 # class TwoLevelSearch(Resource):
 #     method_decorators = {
@@ -143,7 +146,7 @@ def two_level_search(node_name):
 #         }
 #
 #         return jsonify(json_dict)
-        # return json_dict
+# return json_dict
 
 
 search_api.add_resource(ThreeLevelSearch, '/<node_name>', endpoint="Three_Level_Search")
