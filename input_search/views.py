@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import jsonify, current_app
-from search import search_bp
+from input_search import search_bp
 from flask_restful import Resource, Api
 import time
 

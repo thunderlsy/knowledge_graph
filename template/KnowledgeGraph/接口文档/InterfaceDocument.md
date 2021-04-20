@@ -6,7 +6,7 @@
 - 搜索接口
 
 ##### 请求URL
-- ` /search/<node_name> `
+- ` /input_search/<node_name> `
 ##### 请求方式
 - GET 
 

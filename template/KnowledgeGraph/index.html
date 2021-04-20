@@ -60,7 +60,7 @@
         console.log(input_name);
         $.ajax({
             type: "get",
-            url: "http://10.141.6.133:5000/search/" + input_name,
+            url: "http://10.141.6.133:5000/input_search/" + input_name,
             success: function (result) {
                 console.log(result);
                 if (result.error_code == 0) {
@@ -193,7 +193,7 @@
                     //位置相同的操作
                     $.ajax({
                         type: "get",
-                        url: "http://10.141.6.133:5000/search/" + node.name,
+                        url: "http://10.141.6.133:5000/input_search/" + node.name,
                         success: function (result) {
                             console.log(result);
                             if (result.error_code == 0) {
