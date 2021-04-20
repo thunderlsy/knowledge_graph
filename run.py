@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 from cart import cart_bp
-from input_search import search_bp
+from input_search import input_search_bp
 from py2neo import Graph
 
 
@@ -40,7 +40,7 @@ app = create_flask_app(DevelopmentConfig)
 
 # 数据库连接信息保存在current_app中
 app.graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
-app.register_blueprint(search_bp)
+app.register_blueprint(input_search_bp)
 app.register_blueprint(cart_bp)
 
 

@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from flask import jsonify, current_app
-from input_search import search_bp
+from input_search import input_search_bp
 from flask_restful import Resource, Api
 import time
 
-search_api = Api(search_bp)
+search_api = Api(input_search_bp)
 
 
 def timing_one(func):
