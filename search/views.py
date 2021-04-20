@@ -89,7 +89,7 @@ class ThreeLevelSearch(Resource):
 
 def two_level_search(node_name):
     # 二级查询
-    gql = "match (source_node)-[r]-(target_node) where source_node.name =~ '.*{}.*' return source_node,r,target_node".format(
+    gql = "match (source_node)-[r]->(target_node) where source_node.name = '{}' return source_node,r,target_node".format(
         node_name)
 
     sub_graph = current_app.graph.run(gql).data()
