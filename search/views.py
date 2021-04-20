@@ -51,12 +51,12 @@ class ThreeLevelSearch(Resource):
 
         if not sub_graph:
             sub_graph = two_level_search(node_name)
-            if sub_graph:
-                return sub_graph
-            else:
-                return json_dict
+            # if sub_graph:
+            #     return sub_graph
+            # else:
+            #     return json_dict
 
-            # return sub_graphsub_graph:json_dict
+            return sub_graph if sub_graph else json_dict
 
         # if not sub_graph:
         #     return json_dict
