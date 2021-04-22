@@ -25,11 +25,15 @@
     </div>
 </header>
 <div class="main">
+    <div id="back_off" class="hidden">
+        <a href="#">⇦</a>
+    </div>
     <div class="search">
         <input type="text" placeholder="搜索..." class="input_val">
         <button class="click_but">搜 索</button>
     </div>
 
+ 
     <div class="main_svg hidden"></div>
     <footer>
         <p>Design by: iDSBG PSD NPI RD SW AI&BigData</p>
@@ -45,6 +49,11 @@
         if (e.keyCode == "13") {  //回车触发事件
             click_func();
         }
+    });
+
+    let node_name;
+    $("#back_off").click(function(){
+        click_ajax(node_name, 'back_off');    
     });
 
     function click_func() {
@@ -65,10 +74,11 @@
                 console.log(result);
                 if (result.error_code == 0) {
                     $(".main_svg").empty();
-                    forcce_map(result);
+                    force_map(result);
                     $(".main_svg").removeClass("hidden");
                     $(".search_nav").removeClass("hidden");
                     $(".search").addClass("hidden");
+                    node_name = result.start_node.start_name
                 }
                 else {
                     alert(result.data)
@@ -77,11 +87,39 @@
             //请求失败，包含具体的错误信息
             error: function (e) {
                 console.log(e.status);
+                alert(e.status)
             }
         });
     }
 
-    function forcce_map(datas) {
+    function click_ajax(name, click_name) {
+        $.ajax({
+                type: "get",
+                url: "http://10.141.6.133:5000/click_search/" + name,
+                success: function (result) {
+                    if (result.error_code == 0) {
+                        $(".main_svg").empty();
+                        force_map(result);
+                        if (click_name === 'but_click') {
+                            $("#back_off").removeClass("hidden");
+                        } 
+                        else if (click_name === 'back_off') {
+                            $("#back_off").addClass("hidden");
+                        }                
+                    }
+                    else {
+                        alert(result.data)
+                    }
+                },
+                //请求失败，包含具体的错误信息
+                error: function (e) {
+                    console.log(e.status);
+                    alert(e.status)
+                }
+            });
+    }
+
+    function force_map(datas) {
         let nodes = {};
         let links = datas.relationship_information;
         links.forEach(function (link) {
@@ -95,9 +133,6 @@
             });
 
         });
-
-        console.log(nodes);
-        console.log(links);
 
         let width = 1068,
             height = 800;
@@ -173,7 +208,7 @@
 
 
         //圆圈
-        var x, y;
+        let x, y;
         let circle = svg.append("g").selectAll("circle")
             .data(force.nodes())  //表示使用force.nodes数据
             .enter()
@@ -187,28 +222,12 @@
                 y = event.pageY;
             })
             .on("mouseup", function(node){ //鼠标释放        
-                var newX = event.pageX;
-                var newY = event.pageY;
+                let newX = event.pageX;
+                let newY = event.pageY;
                 if(x == newX && y == newY){
                     //位置相同的操作
-                    $.ajax({
-                        type: "get",
-                        url: "http://10.141.6.133:5000/click_search/" + node.name,
-                        success: function (result) {
-                            console.log(result);
-                            if (result.error_code == 0) {
-                                $(".main_svg").empty();
-                                forcce_map(result);
-                            }
-                            else {
-                                alert(result.data)
-                            }
-                        },
-                        //请求失败，包含具体的错误信息
-                        error: function (e) {
-                            console.log(e.status);
-                        }
-                    });
+                    click_ajax(node.name, 'but_click')
+                    
                 }
                 else{
                     //位置不同的操作
@@ -306,6 +325,8 @@
             });
         }
     }
+
+
 
 
 </script>

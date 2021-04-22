@@ -91,6 +91,18 @@ body {
     margin:0 auto;
     overflow: hidden;
 }
+#back_off {
+    position: absolute;
+    margin: 10px 20px;
+}
+.main a {
+    color: #9ebfd8;
+    text-decoration: none;
+    font-size: 28px;
+}
+.main a:hover {
+    color: white;
+}
 /*设置主页面搜索框样式*/
 .search {
     position: relative;
