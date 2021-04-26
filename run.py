@@ -41,6 +41,7 @@ app = create_flask_app(DevelopmentConfig)
 
 # 数据库连接信息保存在current_app中
 app.graph = Graph('http://localhost:7474', username='neo4j', password='neo4j')
+# app.last_search = None
 app.register_blueprint(input_search_bp)
 app.register_blueprint(click_search_bp)
 app.register_blueprint(cart_bp)

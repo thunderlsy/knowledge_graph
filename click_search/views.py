@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from flask import jsonify, current_app
+from flask import jsonify, current_app, session, g
 from click_search import click_search_bp
 from flask_restful import Resource, Api
 import time
@@ -46,6 +46,9 @@ class ThreeLevelSearch(Resource):
         # 三级查询
         gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name =~ '.*{}.*' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
             node_name)
+
+        # last_gql = current_app.last_search
+        # print(last_gql)
 
         sub_graph = current_app.graph.run(gql).data()
 
