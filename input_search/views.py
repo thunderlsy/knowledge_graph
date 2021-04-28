@@ -81,7 +81,7 @@ class ThreeLevelSearch(Resource):
                     temp_second_id_list.append(i['second_node']['id'])
         json_dict = {
             "error_code": 0,
-            "start_node": {"start_name": node_name, "start_id": sub_graph[0]['start_node']['id']},
+            "start_node": {"start_name": sub_graph[0]['start_node']['name'], "start_id": sub_graph[0]['start_node']['id']},
             "relationship_information": Sou_Tar_List,
         }
 

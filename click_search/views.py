@@ -47,6 +47,7 @@ class ThreeLevelSearch(Resource):
         gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name =~ '.*{}.*' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
             node_name)
 
+        # 返回查询语句放入current_app
         # last_gql = current_app.last_search
         # print(last_gql)
 
@@ -54,10 +55,8 @@ class ThreeLevelSearch(Resource):
 
         if not sub_graph:
             sub_graph = two_level_search(node_name)
-            # if sub_graph:
-            #     return sub_graph
-            # else:
-            #     return json_dict
+
+
 
             return sub_graph if sub_graph else json_dict
 
