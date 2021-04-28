@@ -51,25 +51,25 @@
         }
     });
 
-    let node_name;
+    let node_id;
     $("#back_off").click(function(){
-        click_ajax(node_name, 'back_off');    
+        click_ajax(node_id, 'back_off');    
     });
 
     function click_func() {
-        let input_name = $('.search_nav input').val();
+        let input_id = $('.search_nav input').val();
         if ($(".search_nav").is(".hidden")) {
-            input_name = $('.search input').val();
+            input_id = $('.search input').val();
         }
         // 检测输入框是否为空
-        if (input_name == '') {
+        if (input_id == '') {
             alert("请输入内容！");
             return
         }
-        console.log(input_name);
+        console.log(input_id);
         $.ajax({
             type: "get",
-            url: "http://10.141.6.133:5000/input_search/" + input_name,
+            url: "http://10.141.6.133:5000/input_search/" + input_id,
             success: function (result) {
                 console.log(result);
                 if (result.error_code == 0) {
@@ -78,7 +78,7 @@
                     $(".main_svg").removeClass("hidden");
                     $(".search_nav").removeClass("hidden");
                     $(".search").addClass("hidden");
-                    node_name = result.start_node.start_name
+                    node_id = result.start_node.start_id
                 }
                 else {
                     alert(result.data)
@@ -226,7 +226,7 @@
                 let newY = event.pageY;
                 if(x == newX && y == newY){
                     //位置相同的操作
-                    click_ajax(node.name, 'but_click')
+                    click_ajax(node.id, 'but_click')
                     
                 }
                 else{

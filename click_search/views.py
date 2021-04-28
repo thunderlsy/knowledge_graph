@@ -111,47 +111,10 @@ def two_level_search(node_id):
                              "target_id": i['target_node']['id']})
     json_dict = {
         "error_code": 0,
-        "start_node": {"start_name": node_name, "start_id": sub_graph[0]['source_node']['id']},
+        "start_node": {"start_name": sub_graph[0]['source_node']['name'], "start_id": sub_graph[0]['source_node']['id']},
         "relationship_information": Sou_Tar_List,
     }
     return jsonify(json_dict)
 
 
-# class TwoLevelSearch(Resource):
-#     method_decorators = {
-#         "get": [timing_two]
-#     }
-#
-#     def get(self, node_name):
-#
-#         # 二级查询
-#         gql = "match (source_node)-[r]-(target_node) where source_node.name = '{}' return source_node,r,target_node".format(
-#             node_name)
-#
-#         sub_graph = current_app.graph.run(gql).data()
-#
-#         if not sub_graph:
-#             json_dict = {
-#                 "error_code": 1,
-#                 "data": "数据库查无此数据",
-#             }
-#             return json_dict
-#
-#         Sou_Tar_List = []
-#
-#         for i in sub_graph:
-#             Sou_Tar_List.append({"relationship": type(i['r']).__name__,
-#                                  "target_name": i['target_node']['name'],
-#                                  "target_id": i['target_node']['id']})
-#         json_dict = {
-#             "error_code": 0,
-#             "start_node": {"start_name": node_name, "start_id": sub_graph[0]['source_node']['id']},
-#             "relationship_information": Sou_Tar_List,
-#         }
-#
-#         return jsonify(json_dict)
-# return json_dict
-
-
-search_api.add_resource(ThreeLevelSearch, '/<node_name>', endpoint="Three_Level_Search")
-# search_api.add_resource(TwoLevelSearch, '/two/<node_name>', endpoint="Two_Level_Search")
+search_api.add_resource(ThreeLevelSearch, '/<node_id>', endpoint="Three_Level_Search")
