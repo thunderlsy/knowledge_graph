@@ -36,7 +36,7 @@ class ThreeLevelSearch(Resource):
         "get": [timing_one]
     }
 
-    def get(self, node_name):
+    def get(self, node_id):
 
         json_dict = {
             "error_code": 1,
@@ -44,8 +44,8 @@ class ThreeLevelSearch(Resource):
         }
 
         # 三级查询
-        gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name = '{}' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
-            node_name)
+        gql = "match (start_node)-[first_relationship]->(second_node) where start_node.id = '{}' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
+            node_id)
 
         # 返回查询语句放入current_app
         # last_gql = current_app.last_search
@@ -54,9 +54,10 @@ class ThreeLevelSearch(Resource):
         sub_graph = current_app.graph.run(gql).data()
 
         if not sub_graph:
-            sub_graph = two_level_search(node_name)
+            sub_graph = two_level_search(node_id)
 
-
+            # if not sub_graph:
+            #     content_gql = ""
 
             return sub_graph if sub_graph else json_dict
 
@@ -81,7 +82,8 @@ class ThreeLevelSearch(Resource):
                     temp_second_id_list.append(i['second_node']['id'])
         json_dict = {
             "error_code": 0,
-            "start_node": {"start_name": node_name, "start_id": sub_graph[0]['start_node']['id']},
+            "start_node": {"start_name": sub_graph[0]['start_node']['name'],
+                           "start_id": sub_graph[0]['start_node']['id']},
             "relationship_information": Sou_Tar_List,
         }
 
@@ -89,10 +91,10 @@ class ThreeLevelSearch(Resource):
         # return json_dict
 
 
-def two_level_search(node_name):
+def two_level_search(node_id):
     # 二级查询
-    gql = "match (source_node)-[r]->(target_node) where source_node.name = '{}' return source_node,r,target_node".format(
-        node_name)
+    gql = "match (source_node)-[r]->(target_node) where source_node.id = '{}' return source_node,r,target_node".format(
+        node_id)
 
     sub_graph = current_app.graph.run(gql).data()
 
