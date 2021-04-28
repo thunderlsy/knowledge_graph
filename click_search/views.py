@@ -44,7 +44,7 @@ class ThreeLevelSearch(Resource):
         }
 
         # 三级查询
-        gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name =~ '.*{}.*' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
+        gql = "match (start_node)-[first_relationship]->(second_node) where start_node.name = '{}' WITH start_node,first_relationship,second_node match (second_node)-[second_relationship]->(third_node) return start_node,first_relationship,second_node,second_relationship,third_node".format(
             node_name)
 
         # 返回查询语句放入current_app
