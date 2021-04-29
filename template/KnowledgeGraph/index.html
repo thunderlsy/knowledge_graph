@@ -44,10 +44,10 @@
 
 
 <script>
-    $(".click_but").click(click_func);  //点击事件
+    $(".click_but").click(click_search);  //点击事件
     $("body").keydown(function(e) {
         if (e.keyCode == "13") {  //回车触发事件
-            click_func();
+            click_search();
         }
     });
 
@@ -56,7 +56,7 @@
         click_ajax(node_id, 'back_off');    
     });
 
-    function click_func() {
+    function click_search() {
         let input_id = $('.search_nav input').val();
         if ($(".search_nav").is(".hidden")) {
             input_id = $('.search input').val();
@@ -105,7 +105,13 @@
                         } 
                         else if (click_name === 'back_off') {
                             $("#back_off").addClass("hidden");
-                        }                
+                        } 
+                        node_id = result.start_node.start_id               
+                    }
+                    else if (result.error_code == 1) {
+                        $(".main_svg").empty();
+                        $(".main_svg").html('<div style="color: white">' + result.content_html + '</div>');
+                        $("#back_off").removeClass("hidden");
                     }
                     else {
                         alert(result.data)
