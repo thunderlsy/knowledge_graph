@@ -35,13 +35,14 @@
 
  
     <div class="main_svg hidden"></div>
-    <footer>
-        <p>Design by: iDSBG PSD NPI RD SW AI&BigData</p>
-        <p>Ext. 560-80239</p>
-        <p>Email: Amy X.T. Jia/CEN/FOXCONN</p>
-    </footer>
+    
 </div>
-
+<div class="text"></div>
+<footer>
+    <p>Design by: iDSBG PSD NPI RD SW AI&BigData</p>
+    <p>Ext. 560-80239</p>
+    <p>Email: Amy X.T. Jia/CEN/FOXCONN</p>
+</footer>
 
 <script>
     $(".click_but").click(click_search);  //点击事件
@@ -51,34 +52,38 @@
         }
     });
 
-    let node_id;
+    let start_node_id, node_list = [];
+    
+
+    // 后退
     $("#back_off").click(function(){
-        click_ajax(node_id, 'back_off');    
+        $(".text").empty();
+        click_ajax(node_list.pop(), 'back_off');    
+        console.log(node_list, 'back_off')
     });
 
     function click_search() {
-        let input_id = $('.search_nav input').val();
+        node_list = []; //查询的时候清空后退列表
+        let input_name = $('.search_nav input').val();
         if ($(".search_nav").is(".hidden")) {
-            input_id = $('.search input').val();
+            input_name = $('.search input').val();
         }
         // 检测输入框是否为空
-        if (input_id == '') {
+        if (input_name == '') {
             alert("请输入内容！");
             return
         }
-        console.log(input_id);
         $.ajax({
             type: "get",
-            url: "http://10.141.6.133:5000/input_search/" + input_id,
+            url: "http://10.141.6.133:5000/input_search/" + input_name,
             success: function (result) {
-                console.log(result);
                 if (result.error_code == 0) {
                     $(".main_svg").empty();
                     force_map(result);
                     $(".main_svg").removeClass("hidden");
                     $(".search_nav").removeClass("hidden");
-                    $(".search").addClass("hidden");
-                    node_id = result.start_node.start_id
+                    $(".search").addClass("hidden");  
+                    start_node_id = result.start_node.start_id
                 }
                 else {
                     alert(result.data)
@@ -92,26 +97,41 @@
         });
     }
 
-    function click_ajax(name, click_name) {
+    function back_off_hidden() {
+        if (node_list.length > 0) {
+            $("#back_off").removeClass("hidden");
+        }
+        else {
+            $("#back_off").addClass("hidden");
+        }
+    }
+
+    function get_start_node(click_name) {
+        if (click_name === 'but_click') {     
+            node_list.push(start_node_id)   
+            back_off_hidden()
+            console.log(node_list)
+        } 
+        else {
+            back_off_hidden()
+        }
+    }
+
+    function click_ajax(id, click_name) {
         $.ajax({
                 type: "get",
-                url: "http://10.141.6.133:5000/click_search/" + name,
+                url: "http://10.141.6.133:5000/click_search/" + id,
                 success: function (result) {
                     if (result.error_code == 0) {
                         $(".main_svg").empty();
                         force_map(result);
-                        if (click_name === 'but_click') {
-                            $("#back_off").removeClass("hidden");
-                        } 
-                        else if (click_name === 'back_off') {
-                            $("#back_off").addClass("hidden");
-                        } 
-                        node_id = result.start_node.start_id               
+                        get_start_node(click_name)
+                        start_node_id = result.start_node.start_id                 
                     }
                     else if (result.error_code == 1) {
                         $(".main_svg").empty();
-                        $(".main_svg").html('<div style="color: white">' + result.content_html + '</div>');
-                        $("#back_off").removeClass("hidden");
+                        get_start_node(click_name)
+                        $(".text").html(result.content_html);   
                     }
                     else {
                         alert(result.data)
@@ -140,8 +160,8 @@
 
         });
 
-        let width = 1068,
-            height = 800;
+        let width = document.body.clientWidth,
+            height = document.documentElement.clientHeight - 98;
 
         let force = d3.layout.force()  //layout将json格式转化为力学图可用的格式
             .nodes(d3.values(nodes))  //设定节点数组
@@ -233,7 +253,7 @@
                 if(x == newX && y == newY){
                     //位置相同的操作
                     click_ajax(node.id, 'but_click')
-                    
+                        
                 }
                 else{
                     //位置不同的操作

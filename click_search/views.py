@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from flask import jsonify, current_app, session, g
+from flask import jsonify, current_app
 from click_search import click_search_bp
 from flask_restful import Resource, Api
 import time
-from pymongo import MongoClient
-
-# client = MongoClient(host='127.0.0.1', port=27017)
-# collection = client['test']["deduplication_contents"]
 
 search_api = Api(click_search_bp)
 

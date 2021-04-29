@@ -2,13 +2,23 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: 100%;
+    background-color: #0b2838;
+    min-height: 100%;
+}
+
+header {
+    position: sticky;
+    top: 0;
 }
 
 /* 在顶部导航栏中添加背景颜色 */
 .top_nav {
     overflow: hidden;
-    background-color: #0d1c25;
-    opacity: 0.85;
+    background-color: #323F46;
+    /*opacity: 0.85;*/
 
 }
 
@@ -80,19 +90,14 @@ body {
 }
 
 .main {
-    height: 100%;
+    height: 90%;
     width: 100%;
     position: absolute;
-    /*background-image: url(../images/bg.svg);*/
-    background-repeat: no-repeat;
-    background-position: 50%;
-    background-size: 100%;
-    background-color: #0b2838;
     margin:0 auto;
     overflow: hidden;
 }
 #back_off {
-    position: absolute;
+    position: fixed;
     margin: 10px 20px;
 }
 .main a {
@@ -102,6 +107,12 @@ body {
 }
 .main a:hover {
     color: white;
+}
+
+.text {
+    color: white;
+    text-align: left;
+    margin: 90px;
 }
 /*设置主页面搜索框样式*/
 .search {
@@ -143,6 +154,8 @@ footer {
     bottom: 0;
     width: 100%;
     height: 35px;
+    background-color: #0b2838;
+    line-height: 35px;
 }
 footer p {
     display: inline;
