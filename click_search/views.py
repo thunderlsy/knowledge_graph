@@ -7,8 +7,8 @@ from flask_restful import Resource, Api
 import time
 from pymongo import MongoClient
 
-client = MongoClient(host='127.0.0.1', port=27017)
-collection = client['test']["deduplication_contents"]
+# client = MongoClient(host='127.0.0.1', port=27017)
+# collection = client['test']["deduplication_contents"]
 
 search_api = Api(click_search_bp)
 
@@ -109,7 +109,7 @@ def two_level_search(node_id):
         content_graph = current_app.graph.run(content_gql).data()
         if content_graph[0]['source_node']['is_content'] == 'true':
             # t = collection.find_one({"_id": node_id})['html_str']
-            content_html = collection.find_one({"_id": node_id})['html_str']
+            content_html = current_app.mongo.find_one({"_id": node_id})['html_str']
             json_dict = {
                 "error_code": 1,
                 "content_html": content_html,
