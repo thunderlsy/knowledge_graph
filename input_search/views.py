@@ -39,7 +39,7 @@ class ThreeLevelSearch(Resource):
     def get(self, node_name):
 
         json_dict = {
-            "error_code": 1,
+            "error_code": 666,
             "data": "数据库查无此数据",
         }
 

@@ -130,10 +130,10 @@
 
 |参数名|类型|说明|
 |:-----  |:-----|-----                           |
-|error_code |int   |存储返回信息 0:查询到数据，返回 1:未查询到数据  |
+|error_code |int   |存储返回信息 0:返回节点关系数据1:返回节点html数据,666:未查询到数据  |
 |relationship_information |list   |由若干dict构成，每一个dict代表一条关系信息  |
 |start_node |dict   |存储开始节点信息  |
-
+|content_html |str   |当前节点content数据  |
 ##### 备注 
 
 - 每一条关系信息的格式为{节点name，节点id，关系名，节点name，节点id}
