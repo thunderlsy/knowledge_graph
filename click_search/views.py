@@ -5,6 +5,10 @@ from flask import jsonify, current_app, session, g
 from click_search import click_search_bp
 from flask_restful import Resource, Api
 import time
+from pymongo import MongoClient
+
+client = MongoClient(host='127.0.0.1', port=27017)
+collection = client['test']["deduplication_contents"]
 
 search_api = Api(click_search_bp)
 
@@ -99,6 +103,20 @@ def two_level_search(node_id):
     sub_graph = current_app.graph.run(gql).data()
 
     if not sub_graph:
+
+        content_gql = "match (source_node:Entity) where source_node.id = '{}' return source_node".format(node_id)
+
+        content_graph = current_app.graph.run(content_gql).data()
+        if content_graph[0]['source_node']['is_content'] == 'true':
+            # t = collection.find_one({"_id": node_id})['html_str']
+            content_html = collection.find_one({"_id": node_id})['html_str']
+            json_dict = {
+                "error_code": 1,
+                "content_html": content_html,
+            }
+            return json_dict
+        print(content_gql, content_graph)
+
         return
 
     Sou_Tar_List = []
@@ -111,7 +129,8 @@ def two_level_search(node_id):
                              "target_id": i['target_node']['id']})
     json_dict = {
         "error_code": 0,
-        "start_node": {"start_name": sub_graph[0]['source_node']['name'], "start_id": sub_graph[0]['source_node']['id']},
+        "start_node": {"start_name": sub_graph[0]['source_node']['name'],
+                       "start_id": sub_graph[0]['source_node']['id']},
         "relationship_information": Sou_Tar_List,
     }
     return jsonify(json_dict)
