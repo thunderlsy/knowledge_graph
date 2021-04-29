@@ -63,6 +63,7 @@
     });
 
     function click_search() {
+        $(".text").empty();
         node_list = []; //查询的时候清空后退列表
         let input_name = $('.search_nav input').val();
         if ($(".search_nav").is(".hidden")) {
